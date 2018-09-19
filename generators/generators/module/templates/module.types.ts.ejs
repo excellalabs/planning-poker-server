@@ -1,0 +1,17 @@
+
+import { ObjectID } from 'mongodb'
+import { Document } from '../common/common.types'
+
+export interface <%= capitalName %> extends Document {
+  content: string
+  userId: ObjectID
+}
+
+export interface Create<%= capitalName %>Request {
+  content: string
+}
+
+export interface Update<%= capitalName %>Request {
+  <%= name %>Id: ObjectID
+  data: Partial<<%= capitalName %>>
+}

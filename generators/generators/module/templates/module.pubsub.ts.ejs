@@ -1,0 +1,29 @@
+
+import { ObjectID } from 'mongodb'
+import { BasePubSub } from '../../pubsub'
+
+import { <%= capitalName %> } from './<%= name %>.types'
+
+export interface Update<%= capitalName %>Data {
+  <%= name %>: <%= capitalName %>
+}
+
+export class <%= capitalName %>PubSub extends BasePubSub<Update<%= capitalName %>Data> {
+  static instance = new <%= capitalName %>PubSub()
+
+  listenForUpdates (<%= name %>: <%= capitalName %>) {
+    return this.makeSubscription(this.UPDATE_CODE(<%= name %>._id!), {
+      <%= name %>,
+    })
+  }
+
+  publishUpdate (<%= name %>: <%= capitalName %>) {
+    this.publishData(this.UPDATE_CODE(<%= name %>._id!), {
+      <%= name %>,
+    })
+  }
+
+  private UPDATE_CODE (<%= name %>Id: ObjectID) {
+    return `POST:UPDATE:${<%= name %>Id.toHexString()}`
+  }
+}

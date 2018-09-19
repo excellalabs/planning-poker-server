@@ -1,0 +1,9 @@
+node_modules
+.vscode/settings.json
+jestCache
+coverage
+*.js
+*.js.map
+!jest.js
+!package-scripts.js
+!.jest/*

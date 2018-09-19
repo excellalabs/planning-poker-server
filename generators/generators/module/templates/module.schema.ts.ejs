@@ -1,0 +1,89 @@
+
+import { ObjectID } from 'mongodb'
+import { IResolvers } from 'apollo-server'
+import { authorize } from '../../helpers/authorize'
+import gql from '../../helpers/noopTag'
+import { Context } from '../../context'
+import { User } from '../user/user.types'
+import { UserService } from '../user/user.service'
+import { PaginationRequest } from '../common/common.types'
+
+import { <%= capitalName %>Service } from './<%= name %>.service'
+import { <%= capitalName %>PubSub } from './<%= name %>.pubsub'
+import { <%= capitalName %>, Create<%= capitalName %>Request, Update<%= capitalName %>Request } from './<%= name %>.types'
+
+export const typeDefs = gql`
+  extend type Query {
+    <%= name %>s (pagination: PaginationData): [<%= capitalName %>!]!
+    <%= name %> (<%= name %>Id: ObjectID!): <%= capitalName %>!
+  }
+
+  extend type Mutation {
+    create<%= capitalName %> (content: String!): <%= capitalName %>!
+    update<%= capitalName %> (<%= name %>Id: ObjectID!, data: Update<%= capitalName %>!): <%= capitalName %>!
+  }
+
+  extend type Subscription {
+    <%= name %> (<%= name %>Id: ObjectID!): <%= capitalName %>!
+  }
+
+  input Update<%= capitalName %> {
+    content: String
+  }
+
+  type <%= capitalName %> implements Document {
+    _id: ObjectID!
+    content: String!
+    <%= name %>er: User!
+  }
+`
+
+export const <%= name %>Resolvers = {
+  Query: {
+    <%= name %>s: {
+      description: 'Used to retrieve all <%= name %>s.',
+      async resolve (_source: any, { pagination }: PaginationRequest): Promise<<%= capitalName %>[]> {
+        const <%= name %>s = await <%= capitalName %>Service.instance.findAll(pagination)
+        return <%= name %>s
+      },
+    },
+    <%= name %>: {
+      async resolve (_source: any, { <%= name %>Id }: { <%= name %>Id: ObjectID }): Promise<<%= capitalName %> | null> {
+        return <%= capitalName %>Service.instance.findById(<%= name %>Id)
+      },
+    },
+  },
+  Mutation: {
+    create<%= capitalName %>: {
+      async resolve (_source: any, args: Create<%= capitalName %>Request, ctx: Context): Promise<<%= capitalName %>> {
+        const user = await authorize(ctx)
+        return <%= capitalName %>Service.instance.create<%= capitalName %>(user._id!, args)
+      },
+    },
+    update<%= capitalName %>: {
+      async resolve (_source: any, args: Update<%= capitalName %>Request, ctx: Context): Promise<<%= capitalName %>> {
+        const user = await authorize(ctx)
+        const <%= name %> = await <%= capitalName %>Service.instance.update<%= capitalName %>(user._id!, args)
+        <%= capitalName %>PubSub.instance.publishUpdate(<%= name %>)
+        return <%= name %>
+      },
+    },
+  },
+  Subscription: {
+    <%= name %>: {
+      async subscribe (_source: any, { <%= name %>Id }: { <%= name %>Id: ObjectID }): Promise<AsyncIterator<<%= capitalName %>>> {
+        const <%= name %> = await <%= capitalName %>Service.instance.findById$(<%= name %>Id)
+        return <%= capitalName %>PubSub.instance.listenForUpdates(<%= name %>)
+      },
+    },
+  },
+  <%= capitalName %>: {
+    <%= name %>er: {
+      async resolve (source: <%= capitalName %>): Promise<User> {
+        return UserService.instance.findById$(source.userId)
+      },
+    },
+  },
+}
+
+export const resolvers: IResolvers<<%= capitalName %>, Context> = <%= name %>Resolvers

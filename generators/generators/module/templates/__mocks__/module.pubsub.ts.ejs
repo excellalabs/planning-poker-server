@@ -1,0 +1,14 @@
+
+import { <%= capitalName %> } from '../<%= name %>.types'
+import { Update<%= capitalName %>Data } from '../<%= name %>.pubsub'
+
+export const <%= capitalName %>PubSub = {
+  instance: {
+    listenForUpdates: jest.fn((<%= name %>: <%= capitalName %>): AsyncIterable<Update<%= capitalName %>Data> => {
+      return (async function* () {
+        yield { <%= name %> }
+      })()
+    }),
+    publishUpdate: jest.fn(),
+  },
+}

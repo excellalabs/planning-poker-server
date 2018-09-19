@@ -1,0 +1,60 @@
+
+import { ObjectID } from 'mongodb'
+import { User } from '../../user/user.types'
+import { PaginationData } from '../../common/common.types'
+import { <%= capitalName %>, Create<%= capitalName %>Request, Update<%= capitalName %>Request } from '../<%= name %>.types'
+
+const DEFAULT_LIMIT = 20
+const content = 'foo'
+
+const defaultPagination: PaginationData = {
+  limit: DEFAULT_LIMIT,
+}
+
+export const <%= capitalName %>Service = {
+  instance: {
+    findAll: jest.fn(async ({ limit = DEFAULT_LIMIT }: PaginationData = defaultPagination): Promise<<%= capitalName %>[]> => {
+      return [...new Array(limit)].map(() => ({
+        _id: new ObjectID(),
+        content,
+        userId: new ObjectID(),
+      }))
+    }),
+    findAllBy<%= capitalName %>er: jest.fn(async (userId: ObjectID, { limit = DEFAULT_LIMIT }: PaginationData = defaultPagination): Promise<<%= capitalName %>[]> => {
+      return [...new Array(limit)].map(() => ({
+        _id: new ObjectID(),
+        content,
+        userId,
+      }))
+    }),
+    findById: jest.fn(async (_id: ObjectID): Promise<<%= capitalName %> | null> => {
+      return {
+        _id,
+        content,
+        userId: new ObjectID(),
+      }
+    }),
+    findById$: jest.fn(async (_id: ObjectID): Promise<<%= capitalName %>> => {
+      return {
+        _id,
+        content,
+        userId: new ObjectID(),
+      }
+    }),
+    create<%= capitalName %>: jest.fn(async ({ _id }: User, { content }: Create<%= capitalName %>Request): Promise<<%= capitalName %>> => {
+      return {
+        _id: new ObjectID(),
+        content,
+        userId: _id!,
+      }
+    }),
+    update<%= capitalName %>: jest.fn(async ({ _id }: User, { <%= name %>Id, data }: Update<%= capitalName %>Request): Promise<<%= capitalName %>> => {
+      return {
+        _id: <%= name %>Id,
+        userId: _id!,
+        content,
+        ...data,
+      }
+    }),
+  },
+}

@@ -1,0 +1,61 @@
+
+import { ObjectID } from 'mongodb'
+import { BasePubSub as MockBasePubSub } from '../../../__mocks__/pubsub'
+import { <%= capitalName %> } from '../<%= name %>.types'
+
+import { <%= capitalName %>PubSub } from '../<%= name %>.pubsub'
+
+jest.mock('../../../pubsub')
+
+const mockPubSub: MockBasePubSub = <%= capitalName %>PubSub.instance as any
+
+describe('<%= capitalName %>PubSub', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('listenForUpdates', () => {
+    it('should call BasePubSub:makeSubscription once', () => {
+      const <%= name %>: <%= capitalName %> = {
+        _id: new ObjectID(),
+        content: 'foo',
+        userId: new ObjectID(),
+      }
+
+      <%= capitalName %>PubSub.instance.listenForUpdates(<%= name %>)
+
+      expect(mockPubSub.makeSubscription).toHaveBeenCalledTimes(1)
+      expect(mockPubSub.makeSubscription.mock.calls[0][1]).toEqual({ <%= name %> })
+    })
+
+    it('should return the result of BasePubSub:makeSubscription', () => {
+      const expected = {
+        some: 'object',
+      }
+      mockPubSub.makeSubscription.mockReturnValue(expected)
+
+      const result = <%= capitalName %>PubSub.instance.listenForUpdates({
+        _id: new ObjectID(),
+        content: 'bar',
+        userId: new ObjectID(),
+      })
+
+      expect(result).toBe(expected)
+    })
+  })
+
+  describe('publishUpdate', () => {
+    it('should call BasePubSub:publishData once', () => {
+      const <%= name %> = {
+        _id: new ObjectID(),
+        content: 'bar',
+        userId: new ObjectID(),
+      }
+
+      <%= capitalName %>PubSub.instance.publishUpdate(<%= name %>)
+
+      expect(mockPubSub.publishData).toHaveBeenCalledTimes(1)
+      expect(mockPubSub.publishData.mock.calls[0][1]).toEqual({ <%= name %> })
+    })
+  })
+})

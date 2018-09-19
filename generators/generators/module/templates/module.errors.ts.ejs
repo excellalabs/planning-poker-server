@@ -1,0 +1,18 @@
+
+import { FilterQuery } from 'mongodb'
+import { AuthenticationError } from 'apollo-server'
+import { DbNotFoundError } from '../../errors'
+
+import { <%= capitalName %> } from './<%= name %>.types'
+
+export class <%= capitalName %>NotFoundError extends DbNotFoundError<<%= capitalName %>> {
+  constructor (query: FilterQuery<<%= capitalName %>>) {
+    super('<%= capitalName %>', query)
+  }
+}
+
+export class CannotEdit<%= capitalName %>Error extends AuthenticationError {
+  constructor () {
+    super(`You cannot edit someone else's <%= name %>.`)
+  }
+}

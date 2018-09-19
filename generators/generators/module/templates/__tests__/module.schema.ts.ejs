@@ -1,0 +1,237 @@
+
+import { ObjectID } from 'mongodb'
+import { authorize } from '../../../helpers/authorize'
+import { UserService } from '../../user/user.service'
+import { <%= capitalName %>Service } from '../<%= name %>.service'
+import { <%= capitalName %>PubSub } from '../<%= name %>.pubsub'
+
+import { <%= name %>Resolvers } from '../<%= name %>.schema'
+
+jest.mock('../../../helpers/authorize')
+jest.mock('../../user/user.service')
+jest.mock('../<%= name %>.service')
+jest.mock('../<%= name %>.pubsub')
+
+describe('<%= name %> schema resolvers', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('Query', () => {
+    describe('<%= name %>s', () => {
+      it('should call <%= capitalName %>Service:findAll once', async () => {
+        const pagination = {
+          skip: 5,
+        }
+
+        await <%= name %>Resolvers.Query.<%= name %>s.resolve({}, { pagination })
+
+        expect(<%= capitalName %>Service.instance.findAll).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>Service.instance.findAll).toHaveBeenCalledWith(pagination)
+      })
+
+      it('should return the result of <%= capitalName %>Service:findAll', async () => {
+        const <%= name %>s = [{
+          _id: new ObjectID(),
+        }]
+        ;(<%= capitalName %>Service.instance.findAll as jest.Mock).mockResolvedValue(<%= name %>s)
+
+        const result = await <%= name %>Resolvers.Query.<%= name %>s.resolve({}, {})
+
+        expect(result).toBe(<%= name %>s)
+      })
+    })
+
+    describe('<%= name %>', () => {
+      it('should call <%= capitalName %>Service:findById once', async () => {
+        const <%= name %>Id = new ObjectID()
+
+        await <%= name %>Resolvers.Query.<%= name %>.resolve({}, { <%= name %>Id })
+
+        expect(<%= capitalName %>Service.instance.findById).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>Service.instance.findById).toHaveBeenCalledWith(<%= name %>Id)
+      })
+
+      it('should return the result of <%= capitalName %>Service:findById', async () => {
+        const <%= name %> = {
+          _id: new ObjectID(),
+        }
+        ;(<%= capitalName %>Service.instance.findById as jest.Mock).mockResolvedValue(<%= name %>)
+
+        const result = await <%= name %>Resolvers.Query.<%= name %>.resolve({}, { <%= name %>Id: new ObjectID() })
+
+        expect(result).toBe(<%= name %>)
+      })
+    })
+  })
+
+  describe('Mutation', () => {
+    describe('create<%= capitalName %>', () => {
+      it('should call authorize once', async () => {
+        const context = {}
+
+        await <%= name %>Resolvers.Mutation.create<%= capitalName %>.resolve(
+          {},
+          { content: 'foo' },
+          context,
+        )
+
+        expect(authorize).toHaveBeenCalledTimes(1)
+        expect(authorize).toHaveBeenCalledWith(context)
+      })
+
+      it('should call <%= capitalName %>Serive:create<%= capitalName %> once', async () => {
+        const userId = new ObjectID()
+        const args = { content: 'test content' }
+        ;(authorize as jest.Mock).mockResolvedValueOnce({ _id: userId })
+
+        await <%= name %>Resolvers.Mutation.create<%= capitalName %>.resolve(
+          {},
+          args,
+          {},
+        )
+
+        expect(<%= capitalName %>Service.instance.create<%= capitalName %>).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>Service.instance.create<%= capitalName %>).toHaveBeenCalledWith(userId, args)
+      })
+
+      it('should return the result of <%= capitalName %>Service:create<%= capitalName %>', async () => {
+        const <%= name %> = {
+          _id: new ObjectID(),
+        }
+        ;(<%= capitalName %>Service.instance.create<%= capitalName %> as jest.Mock).mockResolvedValue(<%= name %>)
+
+        const result = await <%= name %>Resolvers.Mutation.create<%= capitalName %>.resolve({}, { content: 'baz' }, {})
+
+        expect(result).toBe(<%= name %>)
+      })
+    })
+
+    describe('update<%= capitalName %>', () => {
+      it('should call authorize once', async () => {
+        const context = {}
+
+        await <%= name %>Resolvers.Mutation.create<%= capitalName %>.resolve(
+          {},
+          { content: 'foo' },
+          context,
+        )
+
+        expect(authorize).toHaveBeenCalledTimes(1)
+        expect(authorize).toHaveBeenCalledWith(context)
+      })
+
+      it('should call <%= capitalName %>Serive:update<%= capitalName %> once', async () => {
+        const userId = new ObjectID()
+        const args = { <%= name %>Id: new ObjectID(), data: { content: 'test content' } }
+        ;(authorize as jest.Mock).mockResolvedValueOnce({ _id: userId })
+
+        await <%= name %>Resolvers.Mutation.update<%= capitalName %>.resolve(
+          {},
+          args,
+          {},
+        )
+
+        expect(<%= capitalName %>Service.instance.update<%= capitalName %>).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>Service.instance.update<%= capitalName %>).toHaveBeenCalledWith(userId, args)
+      })
+
+      it('should call <%= capitalName %>PubSub:publishUpdate once', async () => {
+        const <%= name %> = {
+          _id: new ObjectID(),
+        }
+        ;(<%= capitalName %>Service.instance.update<%= capitalName %> as jest.Mock).mockResolvedValueOnce(<%= name %>)
+
+        await <%= name %>Resolvers.Mutation.update<%= capitalName %>.resolve(
+          {},
+          { <%= name %>Id: new ObjectID(), data: { content: 'baf' } },
+          {},
+        )
+
+        expect(<%= capitalName %>PubSub.instance.publishUpdate).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>PubSub.instance.publishUpdate).toHaveBeenCalledWith(<%= name %>)
+      })
+
+      it('should return the result of <%= capitalName %>Service:update<%= capitalName %>', async () => {
+        const <%= name %> = {
+          _id: new ObjectID(),
+        }
+        ;(<%= capitalName %>Service.instance.update<%= capitalName %> as jest.Mock).mockResolvedValue(<%= name %>)
+
+        const result = await <%= name %>Resolvers.Mutation.update<%= capitalName %>.resolve(
+          {},
+          { <%= name %>Id: new ObjectID(), data: { content: 'baz' } },
+          {},
+        )
+
+        expect(result).toBe(<%= name %>)
+      })
+    })
+  })
+
+  describe('Subscription', () => {
+    describe('<%= name %>', () => {
+      it('should call <%= capitalName %>Service:findById$ once', async () => {
+        const <%= name %>Id = new ObjectID()
+
+        await <%= name %>Resolvers.Subscription.<%= name %>.subscribe({}, { <%= name %>Id })
+
+        expect(<%= capitalName %>Service.instance.findById$).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>Service.instance.findById$).toHaveBeenCalledWith(<%= name %>Id)
+      })
+
+      it('should call <%= capitalName %>PubSub:listenForUbdates once', async () => {
+        const <%= name %> = {
+          _id: new ObjectID(),
+        }
+        ;(<%= capitalName %>Service.instance.findById$ as jest.Mock).mockResolvedValue(<%= name %>)
+
+        await <%= name %>Resolvers.Subscription.<%= name %>.subscribe({}, { <%= name %>Id: new ObjectID() })
+
+        expect(<%= capitalName %>PubSub.instance.listenForUpdates).toHaveBeenCalledTimes(1)
+        expect(<%= capitalName %>PubSub.instance.listenForUpdates).toHaveBeenCalledWith(<%= name %>)
+      })
+
+      it('should return the result of <%= capitalName %>PubSub:listenForUpdates', async () => {
+        const expected = {
+          some: 'stuff',
+        }
+        ;(<%= capitalName %>PubSub.instance.listenForUpdates as jest.Mock).mockResolvedValue(expected)
+
+        const result = await <%= name %>Resolvers.Subscription.<%= name %>.subscribe({}, { <%= name %>Id: new ObjectID() })
+
+        expect(result).toBe(expected)
+      })
+    })
+  })
+
+  describe('<%= capitalName %>', () => {
+    describe('<%= name %>er', () => {
+      it('should call UserService:findById$ once', async () => {
+        const userId = new ObjectID()
+
+        await <%= name %>Resolvers.<%= capitalName %>.<%= name %>er.resolve({
+          content: 'fez',
+          userId,
+        })
+
+        expect(UserService.instance.findById$).toHaveBeenCalledTimes(1)
+        expect(UserService.instance.findById$).toHaveBeenCalledWith(userId)
+      })
+
+      it('should return the result of UserService:findById$', async () => {
+        const user = {
+          _id: new ObjectID(),
+        }
+        ;(UserService.instance.findById$ as jest.Mock).mockResolvedValue(user)
+
+        const result = await <%= name %>Resolvers.<%= capitalName %>.<%= name %>er.resolve({
+          content: 'fad',
+          userId: new ObjectID(),
+        })
+
+        expect(result).toBe(user)
+      })
+    })
+  })
+})

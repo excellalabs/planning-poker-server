@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": false,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "target": "es6",
+    "sourceMap": true,
+    "allowJs": false,
+    "lib": ["es2015", "es2016", "es2017", "esnext.asynciterable"],
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

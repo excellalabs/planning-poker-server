@@ -1,0 +1,13 @@
+{
+  "watch": [
+    "src",
+    "tsconfig.json",
+    "package-scripts.js"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "src/**/__tests__/*",
+    "src/**/__mocks__/*"
+  ],
+  "exec": "nps dev.server"
+}

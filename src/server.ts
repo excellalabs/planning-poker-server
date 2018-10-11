@@ -8,6 +8,9 @@ import { contextFunction } from './context'
 let server = new ApolloServer({
   schema,
   context: contextFunction,
+  playground: {
+    endpoint: '/graphql',
+  },
   formatError: (err: any) => {
     return err
   },

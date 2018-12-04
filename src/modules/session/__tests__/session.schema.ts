@@ -21,8 +21,8 @@ describe('session resolvers', () => {
       it('should return the result of SessionService:createSession', async () => {
         const session = {
           _id: new ObjectID(),
-        }
-        ;(SessionService.instance.createSession as jest.Mock).mockResolvedValue(session)
+        };
+        (SessionService.instance.createSession as jest.Mock).mockResolvedValue(session)
 
         const result = await sessionResolvers.Mutation.createSession.resolve({})
 

@@ -8,7 +8,7 @@ import { Session } from './session.types'
 
 export class SessionService extends DbService<Session> {
   constructor (
-    collection = getCollection<Session>('session'),
+    collection = getCollection<Session>('sessions'),
   ) {
     super(collection)
   }
